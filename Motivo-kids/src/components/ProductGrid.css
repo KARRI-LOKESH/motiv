@@ -1,0 +1,28 @@
+/* Add in ProductGrid.css or similar */
+.product-card {
+  @apply bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300;
+}
+
+.product-image {
+  @apply w-full h-56 object-cover;
+}
+
+.product-info {
+  @apply p-4 flex flex-col justify-between;
+}
+
+.product-name {
+  @apply font-semibold text-gray-800 text-lg truncate;
+}
+
+.product-price {
+  @apply font-bold text-blue-600 mt-2;
+}
+
+.product-actions {
+  @apply flex items-center justify-between mt-3;
+}
+
+.product-actions button {
+  @apply p-2 rounded-full hover:bg-gray-100 transition-colors;
+}

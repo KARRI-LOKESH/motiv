@@ -1,0 +1,39 @@
+/* Fast Animated Gradient Background */
+.bg-animated {
+  background: linear-gradient(270deg, #4c0470, #6a5bff, #06bf6f, #043fa6);
+  background-size: 800% 800%;
+  animation: gradientAnimation 8s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Floating Blobs */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.7;
+  animation: floatBlob 6s ease-in-out infinite;
+}
+
+.blob1 { background: #15b988; width: 300px; height: 300px; top: 10%; left: 5%; animation-duration: 7s; }
+.blob2 { background: #6a5bff; width: 350px; height: 350px; top: 50%; left: 60%; animation-duration: 10s; }
+.blob3 { background: #0c106a; width: 250px; height: 250px; top: 70%; left: 30%; animation-duration: 8s; }
+
+@keyframes floatBlob {
+  0%, 100% { transform: translateY(0px) translateX(0px) scale(1); }
+  25% { transform: translateY(-40px) translateX(20px) scale(1.1); }
+  50% { transform: translateY(20px) translateX(-30px) scale(0.9); }
+  75% { transform: translateY(-20px) translateX(10px) scale(1.05); }
+}
+
+/* Text Glow */
+.glow-text {
+  text-shadow: 0 0 8px #0d4230, 0 0 16px #09542d, 0 0 24px #124b0b, 0 0 32px #0a57b4;
+}

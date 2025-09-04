@@ -198,8 +198,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
           </form>
         </div>
 
-        {/* Icons */}
-       {/* Icons */}
+{/* Icons */}
 <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
   {/* Theme Toggle */}
   <button
@@ -207,9 +206,9 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
     className="p-1 sm:p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
   >
     {theme === 'light' ? (
-      <Moon className="w-5 sm:w-6 md:w-7 h-5 sm:h-6 md:h-7 text-gray-700" />
+      <Moon className="w-6 sm:w-7 md:w-8 h-6 sm:h-7 md:h-8 text-gray-700" />
     ) : (
-      <Sun className="w-5 sm:w-6 md:w-7 h-5 sm:h-6 md:h-7 text-yellow-400" />
+      <Sun className="w-6 sm:w-7 md:w-8 h-6 sm:h-7 md:h-8 text-yellow-400" />
     )}
   </button>
 
@@ -219,9 +218,9 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
     className="p-1 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
   >
     {hasWishlist ? (
-      <AiFillHeart className="w-5 sm:w-6 md:w-7 h-5 sm:h-6 md:h-7 text-green-500 animate-pulse" />
+      <AiFillHeart className="w-6 sm:w-7 md:w-8 h-6 sm:h-7 md:h-8 text-green-500 animate-pulse" />
     ) : (
-      <AiOutlineHeart className="w-5 sm:w-6 md:w-7 h-5 sm:h-6 md:h-7 text-gray-600 dark:text-gray-300" />
+      <AiOutlineHeart className="w-6 sm:w-7 md:w-8 h-6 sm:h-7 md:h-8 text-gray-600 dark:text-gray-300" />
     )}
   </button>
 
@@ -230,9 +229,9 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
     onClick={onCartClick}
     className="relative p-1 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
   >
-    <ShoppingCart className="w-5 sm:w-6 md:w-7 h-5 sm:h-6 md:h-7 text-gray-600 dark:text-gray-300" />
+    <ShoppingCart className="w-6 sm:w-7 md:w-8 h-6 sm:h-7 md:h-8 text-gray-600 dark:text-gray-300" />
     {cartItemCount > 0 && (
-      <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs sm:text-sm w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
+      <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs sm:text-sm w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
         {cartItemCount}
       </span>
     )}
@@ -252,13 +251,12 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
       <img
         src={user?.profile_pic || defaultAvatar}
         alt="Profile"
-        className="w-7 sm:w-8 md:w-9 h-7 sm:h-8 md:h-9 rounded-full border"
+        className="w-8 sm:w-9 md:w-10 h-8 sm:h-9 md:h-10 rounded-full border"
       />
       <span className="hidden sm:inline text-gray-700 dark:text-gray-200 font-medium text-sm sm:text-base">
         {isAuthenticated ? user?.name : 'Guest'}
       </span>
     </button>
-
             {showProfileDropdown && (
               <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 py-2 z-50">
                 <button

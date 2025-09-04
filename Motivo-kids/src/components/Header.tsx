@@ -468,6 +468,50 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
             </Link>
           ))}
 
+          {/* Partner With Us Dropdown in Mobile */}
+          <div className="relative">
+            <button
+              onClick={() => setShowPartnerDropdown(!showPartnerDropdown)}
+              className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md font-medium w-full text-left flex justify-between items-center"
+            >
+              Partner With Us
+              <span>{showPartnerDropdown ? "▲" : "▼"}</span>
+            </button>
+            {showPartnerDropdown && (
+              <div className="mt-1 ml-2 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 py-2 flex flex-col space-y-1">
+                <Link
+                  to="/partner/signup"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  Sign Up as Seller
+                </Link>
+                <Link
+                  to="/seller/dashboard"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  Seller Dashboard
+                </Link>
+                <Link
+                  to="/partner/how-it-works"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  How It Works
+                </Link>
+                <Link
+                  to="/partner/faq"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  FAQs & Support
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
             className="flex items-center space-x-2 p-2 mt-4 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"

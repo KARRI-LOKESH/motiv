@@ -153,35 +153,21 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
       <div className="w-full">
         {/* Top Row */}
         <div className="flex items-center justify-between h-16 lg:h-20 px-2 sm:px-4 gap-2">
-          {/* Logo + Theme Toggle */}
-          <div className="flex items-center space-x-2">
-            <Link
-              to="/"
-              className="flex items-center"
-              onClick={handleBlast}
-              onMouseEnter={handleBlast}
-            >
-              <div className="w-28 h-12 sm:w-32 sm:h-14">
-                <img
-                  src={mtvLogo}
-                  alt="Motivo Kids Logo"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            </Link>
-
-            {/* Always visible theme toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              {theme === "light" ? (
-                <Moon className="w-6 h-6 text-gray-700" />
-              ) : (
-                <Sun className="w-6 h-6 text-yellow-400" />
-              )}
-            </button>
-          </div>
+          {/* Logo */}
+          <Link
+            to="/"
+            className="flex items-center"
+            onClick={handleBlast}
+            onMouseEnter={handleBlast}
+          >
+            <div className="w-28 h-12 sm:w-32 sm:h-14">
+              <img
+                src={mtvLogo}
+                alt="Motivo Kids Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </Link>
 
           {/* Mobile Right Icons */}
           <div className="flex items-center space-x-3 md:hidden">
@@ -274,6 +260,17 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
 
           {/* Desktop Right Section */}
           <div className="hidden md:flex items-center space-x-4">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              {theme === "light" ? (
+                <Moon className="w-6 h-6 text-gray-700" />
+              ) : (
+                <Sun className="w-6 h-6 text-yellow-400" />
+              )}
+            </button>
+
             {/* Wishlist */}
             <button
               onClick={() => handleProtectedClick("/wishlist")}
@@ -286,7 +283,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
               )}
             </button>
 
-            {/* Profile Dropdown */}
+            {/* Profile */}
             <div ref={profileRef} className="relative">
               <button
                 onClick={() => {
@@ -352,7 +349,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
               )}
             </div>
 
-            {/* Partner Dropdown */}
+            {/* Partner */}
             <div ref={partnerRef} className="relative">
               <button
                 onClick={() => {
@@ -446,89 +443,77 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
 
       {/* Mobile Drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-900 shadow-lg z-40 transform transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-900 shadow-lg z-50 transform transition-transform duration-300 ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex justify-end p-4">
-          <button onClick={() => setIsMenuOpen(false)}>
-            <X className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+        <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
+          <h2 className="text-xl font-semibold dark:text-white">Menu 📋</h2>
+          <button
+            onClick={() => setIsMenuOpen(false)}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+          >
+            <X className="w-6 h-6" />
           </button>
         </div>
-
-        <div className="flex flex-col space-y-4 px-4">
+        <nav className="flex flex-col space-y-2 p-4">
           {categories.map((cat) => (
             <Link
               key={cat.name}
               to={cat.path}
               onClick={() => setIsMenuOpen(false)}
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+              className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
             >
               {cat.name}
             </Link>
           ))}
-
-          {/* Partner With Us Dropdown in Mobile */}
-          <div className="relative">
-            <button
-              onClick={() => setShowPartnerDropdown(!showPartnerDropdown)}
-              className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md font-medium w-full text-left flex justify-between items-center"
-            >
-              Partner With Us
-              <span>{showPartnerDropdown ? "▲" : "▼"}</span>
-            </button>
-            {showPartnerDropdown && (
-              <div className="mt-1 ml-2 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 py-2 flex flex-col space-y-1">
-                <Link
-                  to="/partner/signup"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Sign Up as Seller
-                </Link>
-                <Link
-                  to="/seller/dashboard"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Seller Dashboard
-                </Link>
-                <Link
-                  to="/partner/how-it-works"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  How It Works
-                </Link>
-                <Link
-                  to="/partner/faq"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  FAQs & Support
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="flex items-center space-x-2 p-2 mt-4 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
+          <Link
+            to="/partner/signup"
+            onClick={() => setIsMenuOpen(false)}
+            className="block py-2 hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
           >
-            {theme === "light" ? (
-              <>
-                <Moon className="w-5 h-5 text-gray-700" />
-                <span className="text-gray-700 dark:text-gray-200">Dark Mode</span>
-              </>
-            ) : (
-              <>
-                <Sun className="w-5 h-5 text-yellow-400" />
-                <span className="text-gray-700 dark:text-gray-200">Light Mode</span>
-              </>
-            )}
-          </button>
-        </div>
+            Partner With Us
+          </Link>
+          {isAuthenticated ? (
+            <>
+              <button
+                onClick={() => handleProtectedClick("/profile")}
+                className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
+              >
+                Profile
+              </button>
+              <button
+                onClick={() => handleProtectedClick("/orders")}
+                className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
+              >
+                Orders
+              </button>
+              <button
+                onClick={() => handleLogout()}
+                className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                onClick={() => setIsMenuOpen(false)}
+                className="block py-2 hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
+              >
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                onClick={() => setIsMenuOpen(false)}
+                className="block py-2 hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
+              >
+                Signup
+              </Link>
+            </>
+          )}
+        </nav>
       </div>
     </header>
   );

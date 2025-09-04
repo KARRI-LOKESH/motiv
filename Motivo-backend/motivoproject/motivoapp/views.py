@@ -321,7 +321,7 @@ def generate_payment_token(request):
     return Response({"status": "success", "token": token})
 
 
-stripe.api_key = settings.STRIPE_API_KEY
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_payment_intent(request):

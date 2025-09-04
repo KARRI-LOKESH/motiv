@@ -1,57 +1,8 @@
 // src/pages/OrdersList.tsx
 import React, { useEffect, useState } from "react";
 import { api } from "../api";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { SiPaytm, SiGooglepay, SiPhonepe } from "react-icons/si";
 import { useTheme } from "../contexts/ThemeContext";
-
-const stripePromise = loadStripe(
-  "pk_test_51RxXsnGn2cFbcw4tHRyccJuvAI5eHy3duAv83OF4DbpMKm3X16opEayy50bfAdRvpI5sixbIWKBzNDSNnOsnjlXh00A9B33kk2"
-);
-
-const CheckoutForm: React.FC<{ orderId: number; onPaymentSuccess: () => void }> = ({ orderId, onPaymentSuccess }) => {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [loading, setLoading] = useState(false);
-
-  const handlePay = async () => {
-    if (!stripe || !elements) return;
-    setLoading(true);
-    try {
-      const res = await api.post("/orders/create-payment-intent/", { order_id: orderId });
-      const clientSecret = res.data.client_secret;
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: { card: elements.getElement(CardElement)! },
-      });
-
-      if (result.error) alert(result.error.message);
-      else if (result.paymentIntent?.status === "succeeded") {
-        alert("Payment Successful!");
-        await api.post("/orders/generate-token/", { order_id: orderId });
-        onPaymentSuccess();
-      }
-    } catch (err: any) {
-      console.error(err);
-      alert("Payment failed!");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="mt-2 space-y-2">
-      <CardElement className="p-2 border rounded bg-white dark:bg-gray-800" />
-      <button
-        disabled={!stripe || loading}
-        onClick={handlePay}
-        className="w-full py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition"
-      >
-        {loading ? "Processing..." : "Pay with Card"}
-      </button>
-    </div>
-  );
-};
 
 const OrdersList: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -73,8 +24,6 @@ const OrdersList: React.FC = () => {
 
   const toggleExpand = (id: number) =>
     setExpandedOrders(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
-
-  const handlePaymentSuccess = () => fetchOrders();
 
   const bgClass = theme === "dark" ? "bg-gray-900 text-gray-200" : "bg-white text-gray-800";
   const borderClass = theme === "dark" ? "border-gray-700" : "border-gray-200";
@@ -139,13 +88,9 @@ const OrdersList: React.FC = () => {
               Placed on: {new Date(order.created_at).toLocaleString()}
             </div>
 
-            {/* Payments */}
+            {/* UPI Payments */}
             {showPayment && (
               <div className="mt-2 space-y-2">
-                <Elements stripe={stripePromise}>
-                  <CheckoutForm orderId={order.id} onPaymentSuccess={handlePaymentSuccess} />
-                </Elements>
-
                 <div className="flex items-center space-x-2">
                   <a href={upiLink} target="_blank" rel="noopener noreferrer">
                     <SiPaytm size={32} color="#FF3F00" title="Pay with Paytm" />

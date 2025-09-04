@@ -85,6 +85,7 @@ const SellerDashboard: React.FC = () => {
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
+  // Fetch seller profile
   useEffect(() => {
     const fetchSellerProfile = async () => {
       try {
@@ -101,6 +102,7 @@ const SellerDashboard: React.FC = () => {
     fetchSellerProfile();
   }, []);
 
+  // Fetch dashboard stats
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -116,6 +118,7 @@ const SellerDashboard: React.FC = () => {
     fetchStats();
   }, []);
 
+  // Fetch all orders
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -129,6 +132,7 @@ const SellerDashboard: React.FC = () => {
     fetchOrders();
   }, []);
 
+  // Search suggestions
   useEffect(() => {
     if (!searchQuery) {
       setSuggestions([]);
@@ -152,6 +156,7 @@ const SellerDashboard: React.FC = () => {
     fetchSuggestions();
   }, [searchQuery]);
 
+  // Click outside for dropdowns
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
@@ -181,41 +186,40 @@ const SellerDashboard: React.FC = () => {
     }
   };
 
-  // Orders graph data (Yesterday vs Today)
- // Orders graph data (Yesterday vs Today) as mountain graph
-const orderGraphData = {
-  labels: ["Yesterday", "Today"],
-  datasets: [
-    {
-      label: "Orders",
-      data: [
-        ordersData.filter(
-          (o) =>
-            new Date(o.created_at).toDateString() ===
-            new Date(Date.now() - 86400000).toDateString()
-        ).length,
-        ordersData.filter(
-          (o) => new Date(o.created_at).toDateString() === new Date().toDateString()
-        ).length,
-      ],
-      fill: true, // <- filled area (mountain)
-      backgroundColor: theme === "dark" ? "rgba(74, 222, 128, 0.4)" : "rgba(22, 163, 74, 0.4)",
-      borderColor: theme === "dark" ? "#4ade80" : "#16a34a",
-      tension: 0.3,
-      pointRadius: 3,
+  // Orders graph (mountain style)
+  const orderGraphData = {
+    labels: ["Yesterday", "Today"],
+    datasets: [
+      {
+        label: "Orders",
+        data: [
+          ordersData.filter(
+            (o) =>
+              new Date(o.created_at).toDateString() ===
+              new Date(Date.now() - 86400000).toDateString()
+          ).length,
+          ordersData.filter(
+            (o) => new Date(o.created_at).toDateString() === new Date().toDateString()
+          ).length,
+        ],
+        fill: true,
+        backgroundColor:
+          theme === "dark" ? "rgba(74, 222, 128, 0.4)" : "rgba(22, 163, 74, 0.4)",
+        borderColor: theme === "dark" ? "#4ade80" : "#16a34a",
+        tension: 0.3,
+        pointRadius: 3,
+      },
+    ],
+  };
+
+  const orderGraphOptions = {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, ticks: { color: theme === "dark" ? "#d1d5db" : "#374151" } },
+      x: { ticks: { color: theme === "dark" ? "#d1d5db" : "#374151" } },
     },
-  ],
-};
-
-const orderGraphOptions = {
-  responsive: true,
-  plugins: { legend: { display: false } },
-  scales: {
-    y: { beginAtZero: true, ticks: { color: theme === "dark" ? "#d1d5db" : "#374151" } },
-    x: { ticks: { color: theme === "dark" ? "#d1d5db" : "#374151" } },
-  },
-};
-
+  };
 
   return (
     <div className={`min-h-screen flex flex-col ${bgMain} font-sans`}>
@@ -260,7 +264,7 @@ const orderGraphOptions = {
             )}
           </form>
 
-          {/* Desktop nav links */}
+          {/* Desktop nav */}
           <nav className="hidden md:flex items-center space-x-6 text-lg font-serif">
             {navLinks.map((link) => (
               <Link
@@ -273,7 +277,7 @@ const orderGraphOptions = {
             ))}
           </nav>
 
-          {/* Profile, Theme toggle & Hamburger */}
+          {/* Profile & Theme & Hamburger */}
           <div className="flex items-center gap-4">
             <button
               onClick={toggleTheme}
@@ -370,7 +374,7 @@ const orderGraphOptions = {
               <div className={`p-6 rounded-xl text-center transition-all hover:scale-105 ${cardBg}`}>
                 <HiCash size={32} className="mx-auto mb-2 text-blue-500" />
                 <h3 className="font-bold text-lg mb-2">Earnings</h3>
-                <p className="text-2xl font-extrabold text-blue-600 dark:text-blue-400">${earnings}</p>
+                <p className="text-2xl font-extrabold text-blue-600 dark:text-blue-400">₹{earnings}</p>
               </div>
             </div>
 
@@ -381,7 +385,7 @@ const orderGraphOptions = {
                 <ul className={textSecondary}>
                   {recentOrders.map((o) => (
                     <li key={o.id} className="border-b py-2">
-                      Order #{o.id} -₹{o.total_price} - {new Date(o.created_at).toLocaleDateString()}
+                      Order #{o.id} - ₹{o.total_price} - {new Date(o.created_at).toLocaleDateString()}
                     </li>
                   ))}
                 </ul>

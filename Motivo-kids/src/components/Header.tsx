@@ -153,21 +153,35 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
       <div className="w-full">
         {/* Top Row */}
         <div className="flex items-center justify-between h-16 lg:h-20 px-2 sm:px-4 gap-2">
-          {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center"
-            onClick={handleBlast}
-            onMouseEnter={handleBlast}
-          >
-            <div className="w-28 h-12 sm:w-32 sm:h-14">
-              <img
-                src={mtvLogo}
-                alt="Motivo Kids Logo"
-                className="w-full h-full object-contain"
-              />
-            </div>
-          </Link>
+          {/* Logo + Theme Toggle */}
+          <div className="flex items-center space-x-2">
+            <Link
+              to="/"
+              className="flex items-center"
+              onClick={handleBlast}
+              onMouseEnter={handleBlast}
+            >
+              <div className="w-28 h-12 sm:w-32 sm:h-14">
+                <img
+                  src={mtvLogo}
+                  alt="Motivo Kids Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            </Link>
+
+            {/* Always visible theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              {theme === "light" ? (
+                <Moon className="w-6 h-6 text-gray-700" />
+              ) : (
+                <Sun className="w-6 h-6 text-yellow-400" />
+              )}
+            </button>
+          </div>
 
           {/* Mobile Right Icons */}
           <div className="flex items-center space-x-3 md:hidden">
@@ -260,18 +274,6 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
 
           {/* Desktop Right Section */}
           <div className="hidden md:flex items-center space-x-4">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              {theme === "light" ? (
-                <Moon className="w-6 h-6 text-gray-700" />
-              ) : (
-                <Sun className="w-6 h-6 text-yellow-400" />
-              )}
-            </button>
-
             {/* Wishlist */}
             <button
               onClick={() => handleProtectedClick("/wishlist")}

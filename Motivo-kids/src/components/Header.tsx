@@ -223,6 +223,38 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
       <AiOutlineHeart className="w-6 sm:w-7 md:w-8 h-6 sm:h-7 md:h-8 text-gray-600 dark:text-gray-300" />
     )}
   </button>
+  {/* Partner Dropdown */}
+<div ref={partnerRef} className="relative">
+  <button
+    onClick={() => {
+      setShowPartnerDropdown(!showPartnerDropdown);
+      setShowProfileDropdown(false);
+      setShowDropdown(false);
+      setIsMenuOpen(false);
+    }}
+    className="px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md font-medium transition-colors text-base sm:text-lg"
+  >
+    🤝
+  </button>
+
+  {showPartnerDropdown && (
+    <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 py-2 z-50">
+      <Link to="/partner/signup" className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+        Sign Up as Seller
+      </Link>
+      <Link to="/seller/dashboard" className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+        Seller Dashboard
+      </Link>
+      <Link to="/partner/how-it-works" className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+        How It Works
+      </Link>
+      <Link to="/partner/faq" className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+        FAQs & Support
+      </Link>
+    </div>
+  )}
+</div>
+
 
   {/* Cart */}
   <button

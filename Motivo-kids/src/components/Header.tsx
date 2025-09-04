@@ -8,6 +8,7 @@ import { useWishlistContext } from '../contexts/WishlistContext';
 import { useTheme } from '../contexts/ThemeContext';
 import mtvLogo from '../assets/mtv.png';
 import confetti from 'canvas-confetti';
+import defaultAvatar from '../assets/default-avatar.png';
 
 interface Product {
   id: number;
@@ -51,6 +52,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
 
   const hasWishlist = wishlistItems.length > 0;
 
+  // Fetch suggestions
   useEffect(() => {
     if (!searchQuery) {
       setSuggestions([]);
@@ -65,6 +67,9 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
         const data: Product[] = await res.json();
         setSuggestions(data.slice(0, 5));
         setShowDropdown(true);
+        setShowProfileDropdown(false);
+        setShowPartnerDropdown(false);
+        setIsMenuOpen(false);
       } catch (err) {
         console.error(err);
         setSuggestions([]);
@@ -73,6 +78,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
     fetchSuggestions();
   }, [searchQuery]);
 
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
@@ -89,9 +95,17 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Close other dropdowns when one opens
+  const closeOtherDropdowns = () => {
+    setShowProfileDropdown(false);
+    setShowPartnerDropdown(false);
+    setShowDropdown(false);
+    setIsMenuOpen(false);
+  };
+
   const handleSelectSuggestion = (name: string) => {
     setSearchQuery(name);
-    setShowDropdown(false);
+    closeOtherDropdowns();
     navigate(`/search?q=${encodeURIComponent(name)}`);
   };
 
@@ -99,24 +113,19 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setShowDropdown(false);
-      setIsMenuOpen(false);
+      closeOtherDropdowns();
     }
   };
 
   const handleProtectedClick = (path: string) => {
     if (!isAuthenticated) navigate('/login');
     else navigate(path);
-    setShowProfileDropdown(false);
-    setShowPartnerDropdown(false);
-    setIsMenuOpen(false);
+    closeOtherDropdowns();
   };
 
   const handleLogout = () => {
     logout();
-    setShowProfileDropdown(false);
-    setShowPartnerDropdown(false);
-    setIsMenuOpen(false);
+    closeOtherDropdowns();
     navigate('/login');
   };
 
@@ -139,7 +148,11 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
           onClick={handleBlast}
           onMouseEnter={handleBlast}
         >
-          <img src={mtvLogo} alt="Motivo Kids" className="w-32 sm:w-36 object-contain" />
+          <img
+            src={mtvLogo || defaultAvatar}
+            alt="Motivo Kids"
+            className="w-20 sm:w-24 object-contain"
+          />
         </Link>
 
         {/* Desktop Search */}
@@ -150,7 +163,11 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
               placeholder="Search for toys, books, clothes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => searchQuery && setShowDropdown(true)}
+              onFocus={() => {
+                searchQuery && setShowDropdown(true);
+                setShowPartnerDropdown(false);
+                setShowProfileDropdown(false);
+              }}
               className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
             />
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -169,7 +186,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
                   >
                     <div className="flex items-center space-x-2">
                       <img
-                        src={product.image || '/placeholder.png'}
+                        src={product.image || defaultAvatar}
                         alt={product.name}
                         className="w-8 h-8 object-contain"
                       />
@@ -187,22 +204,32 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
         <div className="flex items-center space-x-2 sm:space-x-4">
           {/* Theme */}
           <button
-            onClick={toggleTheme}
+            onClick={() => { toggleTheme(); closeOtherDropdowns(); }}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
-            {theme === 'light' ? (
-              <Moon className="w-6 h-6 text-gray-700" />
+            {theme === 'light' ? <Moon className="w-6 h-6 text-gray-700" /> : <Sun className="w-6 h-6 text-yellow-400" />}
+          </button>
+
+          {/* Wishlist */}
+          <button
+            onClick={() => handleProtectedClick('/wishlist')}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+          >
+            {hasWishlist ? (
+              <AiFillHeart className="w-6 h-6 text-green-500 animate-pulse" />
             ) : (
-              <Sun className="w-6 h-6 text-yellow-400" />
+              <AiOutlineHeart className="w-6 h-6 text-gray-600 dark:text-gray-300" />
             )}
           </button>
 
-          {/* Partner */}
+          {/* Partner Dropdown (Shakehand) */}
           <div ref={partnerRef} className="relative">
             <button
               onClick={() => {
                 setShowPartnerDropdown(!showPartnerDropdown);
                 setShowProfileDropdown(false);
+                setShowDropdown(false);
+                setIsMenuOpen(false);
               }}
               className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md font-medium transition-colors"
             >
@@ -258,11 +285,13 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
               onClick={() => {
                 setShowProfileDropdown(!showProfileDropdown);
                 setShowPartnerDropdown(false);
+                setShowDropdown(false);
+                setIsMenuOpen(false);
               }}
               className="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
             >
               <img
-                src={user?.profile_pic || '/assets/default-avatar.png'}
+                src={user?.profile_pic || defaultAvatar}
                 alt="Profile"
                 className="w-8 h-8 rounded-full border"
               />
@@ -320,7 +349,10 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
 
           {/* Mobile Hamburger */}
           <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={() => {
+              setIsMenuOpen(!isMenuOpen);
+              closeOtherDropdowns();
+            }}
             className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -329,7 +361,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
       </div>
 
       {/* Desktop Categories */}
-      <nav className="hidden md:flex items-center space-x-8 py-2 px-4 border-t border-gray-200 dark:border-gray-700">
+      <nav className="hidden md:flex items-center space-x-8 py-2 pl-16 pr-4 border-t border-gray-200 dark:border-gray-700">
         {categories.map((cat) => (
           <Link
             key={cat.name}

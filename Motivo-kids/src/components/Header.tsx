@@ -8,7 +8,6 @@ import { useWishlistContext } from '../contexts/WishlistContext';
 import { useTheme } from '../contexts/ThemeContext';
 import mtvLogo from '../assets/mtv.png';
 import confetti from 'canvas-confetti';
-import defaultAvatar from '../assets/default-avatar.png';
 
 interface Product {
   id: number;
@@ -52,14 +51,12 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
 
   const hasWishlist = wishlistItems.length > 0;
 
-  // Fetch suggestions
   useEffect(() => {
     if (!searchQuery) {
       setSuggestions([]);
       setShowDropdown(false);
       return;
     }
-
     const fetchSuggestions = async () => {
       try {
         const res = await fetch(
@@ -73,11 +70,9 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
         setSuggestions([]);
       }
     };
-
     fetchSuggestions();
   }, [searchQuery]);
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
@@ -134,227 +129,231 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow sticky top-0 z-50 transition-colors">
-      <div className="w-full">
-        <div className="flex items-center h-16 sm:h-18 px-2 sm:px-4 gap-2">
-          {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center pl-2 sm:pl-4 md:pl-6 lg:pl-8 xl:pl-10"
-            onClick={handleBlast}
-            onMouseEnter={handleBlast}
-          >
-            <div className="w-36 h-16 sm:w-40 sm:h-18 md:w-44 md:h-20 lg:w-48 lg:h-24 overflow-hidden relative">
-              <img
-                src={mtvLogo}
-                alt="Motivo Kids Logo"
-                className="w-full h-full object-contain"
-              />
-            </div>
-          </Link>
+    <header className="bg-white dark:bg-gray-900 shadow sticky top-0 z-50">
+      {/* Main Header */}
+      <div className="flex items-center h-16 lg:h-20 px-2 sm:px-4 justify-between">
+        {/* Logo */}
+        <Link
+          to="/"
+          className="flex items-center"
+          onClick={handleBlast}
+          onMouseEnter={handleBlast}
+        >
+          <img src={mtvLogo} alt="Motivo Kids" className="w-32 sm:w-36 object-contain" />
+        </Link>
 
-          {/* Desktop Search */}
-          <div className="hidden md:flex flex-1 max-w-xl relative">
-            <form onSubmit={handleSearchSubmit} className="w-full relative">
-              <input
-                type="text"
-                placeholder="Search for toys, books, clothes..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => searchQuery && setShowDropdown(true)}
-                className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
-              />
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        {/* Desktop Search */}
+        <div className="hidden md:flex flex-1 max-w-xl relative mx-4">
+          <form onSubmit={handleSearchSubmit} className="w-full relative">
+            <input
+              type="text"
+              placeholder="Search for toys, books, clothes..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => searchQuery && setShowDropdown(true)}
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+            />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
 
-              {showDropdown && suggestions.length > 0 && (
-                <div
-                  ref={dropdownRef}
-                  className="absolute top-full left-0 right-0 mt-1 z-50 bg-white dark:bg-gray-800 shadow-md rounded-md overflow-hidden"
-                >
-                  {suggestions.map((product) => (
-                    <div
-                      key={product.id}
-                      onClick={() => handleSelectSuggestion(product.name)}
-                      className="flex items-center justify-between px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700 cursor-pointer"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <img
-                          src={product.image || '/placeholder.png'}
-                          alt={product.name}
-                          className="w-8 h-8 object-contain"
-                        />
-                        <span className="text-gray-800 dark:text-gray-200">{product.name}</span>
-                      </div>
-                      <span className="text-gray-500 dark:text-gray-400 text-sm">₹{product.price}</span>
+            {/* Suggestions */}
+            {showDropdown && suggestions.length > 0 && (
+              <div
+                ref={dropdownRef}
+                className="absolute top-full left-0 right-0 mt-1 z-50 bg-white dark:bg-gray-800 shadow-md rounded-md overflow-hidden"
+              >
+                {suggestions.map((product) => (
+                  <div
+                    key={product.id}
+                    onClick={() => handleSelectSuggestion(product.name)}
+                    className="flex items-center justify-between px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700 cursor-pointer"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <img
+                        src={product.image || '/placeholder.png'}
+                        alt={product.name}
+                        className="w-8 h-8 object-contain"
+                      />
+                      <span className="text-gray-800 dark:text-gray-200">{product.name}</span>
                     </div>
-                  ))}
-                </div>
-              )}
-            </form>
-          </div>
-
-          {/* Right Icons (Logo, Moon/Light, Partner, Cart, Hamburger on Mobile) */}
-          <div className="flex items-center ml-auto space-x-2 sm:space-x-4 md:space-x-6 lg:space-x-8">
-            {/* Theme toggle */}
-            <button className="p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-              {theme === 'light' ? (
-                <Moon className="w-7 h-7 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-gray-700" />
-              ) : (
-                <Sun className="w-7 h-7 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-yellow-400" />
-              )}
-            </button>
-
-            {/* Wishlist */}
-            <button
-              onClick={() => handleProtectedClick('/wishlist')}
-              className="p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-            >
-              {hasWishlist ? (
-                <AiFillHeart className="w-7 h-7 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-green-500 animate-pulse" />
-              ) : (
-                <AiOutlineHeart className="w-7 h-7 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-gray-600 dark:text-gray-300" />
-              )}
-            </button>
-
-            {/* Profile */}
-            <div ref={profileRef} className="relative">
-              <button
-                onClick={() => {
-                  setShowProfileDropdown(!showProfileDropdown);
-                  setShowPartnerDropdown(false);
-                }}
-                className="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-              >
-                <img
-                  src={user?.profile_pic || defaultAvatar}
-                  alt="Profile"
-                  className="w-9 h-9 sm:w-9 sm:h-9 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-full border"
-                />
-                <span className="hidden sm:inline text-gray-700 dark:text-gray-200 font-medium">
-                  {isAuthenticated ? user?.name : 'Guest'}
-                </span>
-              </button>
-
-              {showProfileDropdown && (
-                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 py-2 z-50">
-                  <button
-                    onClick={() => handleProtectedClick('/profile')}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Profile
-                  </button>
-                  <button
-                    onClick={() => handleProtectedClick('/orders')}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Orders
-                  </button>
-                  <button
-                    onClick={() => handleProtectedClick('/wishlist')}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Wishlist
-                  </button>
-                  {isAuthenticated ? (
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      Logout
-                    </button>
-                  ) : (
-                    <>
-                      <Link to="/signup" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                        Signup
-                      </Link>
-                      <Link to="/login" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                        Login
-                      </Link>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Partner 🤝 */}
-            <div ref={partnerRef} className="relative">
-              <button
-                onClick={() => {
-                  setShowPartnerDropdown(!showPartnerDropdown);
-                  setShowProfileDropdown(false);
-                }}
-                className="px-4 py-3 sm:px-4 sm:py-3 md:px-5 md:py-4 rounded-md font-medium text-base sm:text-base md:text-lg lg:text-xl hover:bg-gray-100 dark:hover:bg-gray-800"
-              >
-                🤝
-              </button>
-
-              {showPartnerDropdown && (
-                <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 py-2 z-50">
-                  <Link to="/partner/signup" className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    Sign Up as Seller
-                  </Link>
-                  <Link to="/seller/dashboard" className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    Seller Dashboard
-                  </Link>
-                  <Link to="/partner/how-it-works" className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    How It Works
-                  </Link>
-                  <Link to="/partner/faq" className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    FAQs & Support
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* Cart */}
-            <button
-              onClick={onCartClick}
-              className="relative p-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-            >
-              <ShoppingCart className="w-7 h-7 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-gray-600 dark:text-gray-300" />
-              {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs sm:text-sm w-6 h-6 flex items-center justify-center">
-                  {cartItemCount}
-                </span>
-              )}
-            </button>
-
-            {/* Mobile Hamburger */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-3 sm:p-3 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors md:hidden"
-            >
-              {isMenuOpen ? <X className="w-7 h-7 sm:w-7 sm:h-7" /> : <Menu className="w-7 h-7 sm:w-7 sm:h-7" />}
-            </button>
-          </div>
+                    <span className="text-gray-500 dark:text-gray-400 text-sm">₹{product.price}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </form>
         </div>
 
-        {/* Categories */}
-        <nav
-          className="hidden md:flex items-center space-x-8 py-4 border-t border-gray-200 dark:border-gray-700 px-2 sm:px-4"
-          style={{ marginLeft: "80px" }}
-        >
-          {categories.map((cat) => (
-            <Link
-              key={cat.name}
-              to={cat.path}
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+        {/* Always-visible Icons */}
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          {/* Theme */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            {theme === 'light' ? (
+              <Moon className="w-6 h-6 text-gray-700" />
+            ) : (
+              <Sun className="w-6 h-6 text-yellow-400" />
+            )}
+          </button>
+
+          {/* Partner */}
+          <div ref={partnerRef} className="relative">
+            <button
+              onClick={() => {
+                setShowPartnerDropdown(!showPartnerDropdown);
+                setShowProfileDropdown(false);
+              }}
+              className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md font-medium transition-colors"
             >
-              {cat.name}
-            </Link>
-          ))}
-        </nav>
+              🤝
+            </button>
+
+            {showPartnerDropdown && (
+              <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 py-2 z-50">
+                <Link
+                  to="/partner/signup"
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  Sign Up as Seller
+                </Link>
+                <Link
+                  to="/seller/dashboard"
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  Seller Dashboard
+                </Link>
+                <Link
+                  to="/partner/how-it-works"
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  How It Works
+                </Link>
+                <Link
+                  to="/partner/faq"
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  FAQs & Support
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Cart */}
+          <button
+            onClick={onCartClick}
+            className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+          >
+            <ShoppingCart className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                {cartItemCount}
+              </span>
+            )}
+          </button>
+
+          {/* Profile */}
+          <div ref={profileRef} className="relative">
+            <button
+              onClick={() => {
+                setShowProfileDropdown(!showProfileDropdown);
+                setShowPartnerDropdown(false);
+              }}
+              className="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+            >
+              <img
+                src={user?.profile_pic || '/assets/default-avatar.png'}
+                alt="Profile"
+                className="w-8 h-8 rounded-full border"
+              />
+              <span className="hidden sm:inline text-gray-700 dark:text-gray-200 font-medium">
+                {isAuthenticated ? user?.name : 'Guest'}
+              </span>
+            </button>
+
+            {showProfileDropdown && (
+              <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 py-2 z-50">
+                <button
+                  onClick={() => handleProtectedClick('/profile')}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  Profile
+                </button>
+                <button
+                  onClick={() => handleProtectedClick('/orders')}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  Orders
+                </button>
+                <button
+                  onClick={() => handleProtectedClick('/wishlist')}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  Wishlist
+                </button>
+                {isAuthenticated ? (
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    Logout
+                  </button>
+                ) : (
+                  <>
+                    <Link
+                      to="/signup"
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      Signup
+                    </Link>
+                    <Link
+                      to="/login"
+                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      Login
+                    </Link>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Hamburger */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+          >
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
+
+      {/* Desktop Categories */}
+      <nav className="hidden md:flex items-center space-x-8 py-2 px-4 border-t border-gray-200 dark:border-gray-700">
+        {categories.map((cat) => (
+          <Link
+            key={cat.name}
+            to={cat.path}
+            className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+          >
+            {cat.name}
+          </Link>
+        ))}
+      </nav>
 
       {/* Mobile Overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-black transition-opacity duration-300 ${isMenuOpen ? 'opacity-50 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 z-40 bg-black transition-opacity duration-300 ${
+          isMenuOpen ? 'opacity-50 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
         onClick={() => setIsMenuOpen(false)}
       ></div>
 
       {/* Mobile Drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-900 shadow-lg z-50 transform transition-transform duration-300 overflow-y-auto ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-900 shadow-lg z-50 transform transition-transform duration-300 overflow-y-auto ${
+          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
       >
         <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
           <h2 className="text-xl font-semibold dark:text-white">Menu 📋</h2>
@@ -378,22 +377,59 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
         {/* Mobile Links */}
         <nav className="flex flex-col space-y-2 p-4">
           {categories.map((cat) => (
-            <Link key={cat.name} to={cat.path} className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium" onClick={() => setIsMenuOpen(false)}>
+            <Link
+              key={cat.name}
+              to={cat.path}
+              className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+              onClick={() => setIsMenuOpen(false)}
+            >
               {cat.name}
             </Link>
           ))}
 
           {isAuthenticated ? (
             <>
-              <button onClick={() => handleProtectedClick('/profile')} className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg">Profile</button>
-              <button onClick={() => handleProtectedClick('/orders')} className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg">Orders</button>
-              <button onClick={() => handleProtectedClick('/wishlist')} className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg">Wishlist</button>
-              <button onClick={handleLogout} className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg">Logout</button>
+              <button
+                onClick={() => handleProtectedClick('/profile')}
+                className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
+              >
+                Profile
+              </button>
+              <button
+                onClick={() => handleProtectedClick('/orders')}
+                className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
+              >
+                Orders
+              </button>
+              <button
+                onClick={() => handleProtectedClick('/wishlist')}
+                className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
+              >
+                Wishlist
+              </button>
+              <button
+                onClick={handleLogout}
+                className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
+              >
+                Logout
+              </button>
             </>
           ) : (
             <>
-              <Link to="/signup" className="block py-2 hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg">Signup</Link>
-              <Link to="/login" className="block py-2 hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg">Login</Link>
+              <Link
+                to="/signup"
+                className="block py-2 hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Signup
+              </Link>
+              <Link
+                to="/login"
+                className="block py-2 hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Login 🔑
+              </Link>
             </>
           )}
         </nav>

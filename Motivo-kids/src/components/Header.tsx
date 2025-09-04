@@ -260,6 +260,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
 
           {/* Desktop Right Section */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -283,7 +284,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
               )}
             </button>
 
-            {/* Profile */}
+            {/* Profile Dropdown */}
             <div ref={profileRef} className="relative">
               <button
                 onClick={() => {
@@ -349,7 +350,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
               )}
             </div>
 
-            {/* Partner */}
+            {/* Partner Dropdown */}
             <div ref={partnerRef} className="relative">
               <button
                 onClick={() => {
@@ -443,83 +444,45 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
 
       {/* Mobile Drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-900 shadow-lg z-50 transform transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-gray-900 shadow-lg z-40 transform transition-transform duration-300 ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
-          <h2 className="text-xl font-semibold dark:text-white">Menu 📋</h2>
-          <button
-            onClick={() => setIsMenuOpen(false)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
-          >
-            <X className="w-6 h-6" />
+        <div className="flex justify-end p-4">
+          <button onClick={() => setIsMenuOpen(false)}>
+            <X className="w-6 h-6 text-gray-600 dark:text-gray-300" />
           </button>
         </div>
-        <nav className="flex flex-col space-y-2 p-4">
+
+        <div className="flex flex-col space-y-4 px-4">
           {categories.map((cat) => (
             <Link
               key={cat.name}
               to={cat.path}
               onClick={() => setIsMenuOpen(false)}
-              className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
             >
               {cat.name}
             </Link>
           ))}
-          <Link
-            to="/partner/signup"
-            onClick={() => setIsMenuOpen(false)}
-            className="block py-2 hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
+
+          <button
+            onClick={toggleTheme}
+            className="flex items-center space-x-2 p-2 mt-4 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
           >
-            Partner With Us
-          </Link>
-          {isAuthenticated ? (
-            <>
-              <button
-                onClick={() => handleProtectedClick("/profile")}
-                className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
-              >
-                Profile
-              </button>
-              <button
-                onClick={() => handleProtectedClick("/orders")}
-                className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
-              >
-                Orders
-              </button>
-              <button
-                onClick={() => handleProtectedClick("/wishlist")}
-                className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
-              >
-                Wishlist
-              </button>
-              <button
-                onClick={handleLogout}
-                className="block py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/signup"
-                onClick={() => setIsMenuOpen(false)}
-                className="block py-2 hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
-              >
-                Signup
-              </Link>
-              <Link
-                to="/login"
-                onClick={() => setIsMenuOpen(false)}
-                className="block py-2 hover:bg-gray-100 dark:hover:bg-gray-800 px-4 rounded-lg"
-              >
-                Login 🔑
-              </Link>
-            </>
-          )}
-        </nav>
+            {theme === "light" ? (
+              <>
+                <Moon className="w-5 h-5 text-gray-700" />
+                <span className="text-gray-700 dark:text-gray-200">Dark Mode</span>
+              </>
+            ) : (
+              <>
+                <Sun className="w-5 h-5 text-yellow-400" />
+                <span className="text-gray-700 dark:text-gray-200">Light Mode</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </header>
   );

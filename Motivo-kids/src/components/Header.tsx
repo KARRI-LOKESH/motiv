@@ -52,7 +52,6 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
 
   const hasWishlist = wishlistItems.length > 0;
 
-  // Fetch search suggestions
   useEffect(() => {
     if (!searchQuery) {
       setSuggestions([]);
@@ -78,7 +77,6 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
     fetchSuggestions();
   }, [searchQuery]);
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
@@ -144,240 +142,187 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
   return (
     <header className="bg-white dark:bg-gray-900 shadow sticky top-0 z-50">
       {/* Main Header */}
-      <div className="flex items-center h-16 lg:h-20 px-2 sm:px-4 justify-between">
-        {/* Logo */}
-        <Link
-          to="/"
-          className="flex items-center"
-          onClick={handleBlast}
-          onMouseEnter={handleBlast}
+     <div className="flex items-center h-16 lg:h-20 px-2 sm:px-4 justify-between w-full">
+  {/* Logo */}
+  <Link
+    to="/"
+    className="flex items-center flex-shrink-0 mr-6"
+    onClick={handleBlast}
+    onMouseEnter={handleBlast}
+  >
+    <img
+      src={mtvLogo || defaultAvatar}
+      alt="Motivo Kids"
+      className="w-24 sm:w-28 md:w-32 object-contain"
+    />
+  </Link>
+
+  {/* Desktop Search */}
+  <div className="hidden md:flex flex-1 max-w-xl relative mx-4">
+    <form onSubmit={handleSearchSubmit} className="w-full relative">
+      <input
+        type="text"
+        placeholder="Search for toys, books, clothes..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        onFocus={() => searchQuery && setShowDropdown(true)}
+        className="w-full pl-12 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+      />
+      <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" />
+
+      {showDropdown && suggestions.length > 0 && (
+        <div
+          ref={dropdownRef}
+          className="absolute top-full left-0 right-0 mt-1 z-50 bg-white dark:bg-gray-800 shadow-md rounded-md overflow-hidden"
         >
-          <img
-            src={mtvLogo || defaultAvatar}
-            alt="Motivo Kids"
-            className="w-28 sm:w-32 md:w-36 object-contain"
-          />
-        </Link>
-
-        {/* Desktop Search */}
-        <div className="hidden md:flex flex-1 max-w-xl relative mx-4">
-          <form onSubmit={handleSearchSubmit} className="w-full relative">
-            <input
-              type="text"
-              placeholder="Search for toys, books, clothes..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => searchQuery && setShowDropdown(true)}
-              className="w-full pl-14 pr-4 py-3 border border-gray-300 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
-            />
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 sm:w-7 md:w-8 h-6 sm:h-7 md:h-8" />
-
-            {/* Suggestions */}
-            {showDropdown && suggestions.length > 0 && (
-              <div
-                ref={dropdownRef}
-                className="absolute top-full left-0 right-0 mt-1 z-50 bg-white dark:bg-gray-800 shadow-md rounded-md overflow-hidden"
-              >
-                {suggestions.map((product) => (
-                  <div
-                    key={product.id}
-                    onClick={() => handleSelectSuggestion(product.name)}
-                    className="flex items-center justify-between px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700 cursor-pointer"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <img
-                        src={product.image || defaultAvatar}
-                        alt={product.name}
-                        className="w-10 h-10 sm:w-12 sm:h-12 object-contain"
-                      />
-                      <span className="text-gray-800 dark:text-gray-200">{product.name}</span>
-                    </div>
-                    <span className="text-gray-500 dark:text-gray-400 text-sm sm:text-base">₹{product.price}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </form>
-        </div>
-
-        {/* Icons Section */}
-        <div className="flex items-center space-x-2 sm:space-x-4">
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          >
-            {theme === 'light' ? (
-              <Moon className="w-7 sm:w-8 md:w-9 h-7 sm:h-8 md:h-9 text-gray-700" />
-            ) : (
-              <Sun className="w-7 sm:w-8 md:w-9 h-7 sm:h-8 md:h-9 text-yellow-400" />
-            )}
-          </button>
-
-          {/* Wishlist */}
-          <button
-            onClick={() => handleProtectedClick('/wishlist')}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-          >
-            {hasWishlist ? (
-              <AiFillHeart className="w-7 sm:w-8 md:w-9 h-7 sm:h-8 md:h-9 text-green-500 animate-pulse" />
-            ) : (
-              <AiOutlineHeart className="w-7 sm:w-8 md:w-9 h-7 sm:h-8 md:h-9 text-gray-600 dark:text-gray-300" />
-            )}
-          </button>
-
-          {/* Partner Dropdown */}
-          <div ref={partnerRef} className="relative">
-            <button
-              onClick={() => {
-                setShowPartnerDropdown(!showPartnerDropdown);
-                setShowProfileDropdown(false);
-                setShowDropdown(false);
-                setIsMenuOpen(false);
-              }}
-              className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md font-medium transition-colors text-lg sm:text-xl"
+          {suggestions.map((product) => (
+            <div
+              key={product.id}
+              onClick={() => handleSelectSuggestion(product.name)}
+              className="flex items-center justify-between px-4 py-2 hover:bg-blue-100 dark:hover:bg-gray-700 cursor-pointer"
             >
-              🤝
-            </button>
-
-            {showPartnerDropdown && (
-              <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 py-2 z-50">
-                <Link
-                  to="/partner/signup"
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Sign Up as Seller
-                </Link>
-                <Link
-                  to="/seller/dashboard"
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Seller Dashboard
-                </Link>
-                <Link
-                  to="/partner/how-it-works"
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  How It Works
-                </Link>
-                <Link
-                  to="/partner/faq"
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  FAQs & Support
-                </Link>
+              <div className="flex items-center space-x-2">
+                <img
+                  src={product.image || defaultAvatar}
+                  alt={product.name}
+                  className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+                />
+                <span className="text-gray-800 dark:text-gray-200 text-sm sm:text-base">
+                  {product.name}
+                </span>
               </div>
-            )}
-          </div>
-
-          {/* Cart */}
-          <button
-            onClick={onCartClick}
-            className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-          >
-            <ShoppingCart className="w-7 sm:w-8 md:w-9 h-7 sm:h-8 md:h-9 text-gray-600 dark:text-gray-300" />
-            {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs sm:text-sm w-6 h-6 flex items-center justify-center">
-                {cartItemCount}
+              <span className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
+                ₹{product.price}
               </span>
-            )}
-          </button>
-
-          {/* Profile */}
-          <div ref={profileRef} className="relative">
-            <button
-              onClick={() => {
-                setShowProfileDropdown(!showProfileDropdown);
-                setShowPartnerDropdown(false);
-                setShowDropdown(false);
-                setIsMenuOpen(false);
-              }}
-              className="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-            >
-              <img
-                src={user?.profile_pic || defaultAvatar}
-                alt="Profile"
-                className="w-10 sm:w-12 md:w-14 h-10 sm:h-12 md:h-14 rounded-full border"
-              />
-              <span className="hidden sm:inline text-gray-700 dark:text-gray-200 font-medium text-base sm:text-lg">
-                {isAuthenticated ? user?.name : 'Guest'}
-              </span>
-            </button>
-
-            {showProfileDropdown && (
-              <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 py-2 z-50">
-                <button
-                  onClick={() => handleProtectedClick('/profile')}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Profile
-                </button>
-                <button
-                  onClick={() => handleProtectedClick('/orders')}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Orders
-                </button>
-                <button
-                  onClick={() => handleProtectedClick('/wishlist')}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Wishlist
-                </button>
-                {isAuthenticated ? (
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Logout
-                  </button>
-                ) : (
-                  <>
-                    <Link
-                      to="/signup"
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      Signup
-                    </Link>
-                    <Link
-                      to="/login"
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      Login
-                    </Link>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Hamburger */}
-          <button
-            onClick={() => {
-              setIsMenuOpen(!isMenuOpen);
-              setShowDropdown(false);
-              setShowProfileDropdown(false);
-              setShowPartnerDropdown(false);
-            }}
-            className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-          >
-            {isMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
-          </button>
+            </div>
+          ))}
         </div>
-      </div>
+      )}
+    </form>
+  </div>
+
+  {/* Icons Section */}
+  <div className="flex items-center space-x-2 sm:space-x-3">
+    {/* Theme Toggle */}
+    <button
+      onClick={toggleTheme}
+      className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+    >
+      {theme === 'light' ? (
+        <Moon className="w-5 sm:w-6 h-5 sm:h-6 text-gray-700" />
+      ) : (
+        <Sun className="w-5 sm:w-6 h-5 sm:h-6 text-yellow-400" />
+      )}
+    </button>
+
+    {/* Wishlist */}
+    <button
+      onClick={() => handleProtectedClick('/wishlist')}
+      className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+    >
+      {hasWishlist ? (
+        <AiFillHeart className="w-5 sm:w-6 h-5 sm:h-6 text-green-500" />
+      ) : (
+        <AiOutlineHeart className="w-5 sm:w-6 h-5 sm:h-6 text-gray-600 dark:text-gray-300" />
+      )}
+    </button>
+
+    {/* Partner Dropdown */}
+    <div ref={partnerRef} className="relative">
+      <button
+        onClick={() => {
+          setShowPartnerDropdown(!showPartnerDropdown);
+          setShowProfileDropdown(false);
+          setShowDropdown(false);
+          setIsMenuOpen(false);
+        }}
+        className="px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md font-medium text-lg sm:text-xl"
+      >
+        🤝
+      </button>
+
+      {showPartnerDropdown && (
+        <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg border dark:border-gray-700 py-2 z-50">
+          <Link to="/partner/signup" className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+            Sign Up as Seller
+          </Link>
+          <Link to="/seller/dashboard" className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+            Seller Dashboard
+          </Link>
+          <Link to="/partner/how-it-works" className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+            How It Works
+          </Link>
+          <Link to="/partner/faq" className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+            FAQs & Support
+          </Link>
+        </div>
+      )}
+    </div>
+
+    {/* Cart */}
+    <button
+      onClick={onCartClick}
+      className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+    >
+      <ShoppingCart className="w-5 sm:w-6 h-5 sm:h-6 text-gray-600 dark:text-gray-300" />
+      {cartItemCount > 0 && (
+        <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center sm:w-6 sm:h-6 sm:text-sm">
+          {cartItemCount}
+        </span>
+      )}
+    </button>
+
+    {/* Profile + Hamburger */}
+    <div ref={profileRef} className="relative flex items-center space-x-2">
+      <button
+        onClick={() => {
+          setShowProfileDropdown(!showProfileDropdown);
+          setShowPartnerDropdown(false);
+          setShowDropdown(false);
+          setIsMenuOpen(false);
+        }}
+        className="flex items-center space-x-2 p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+      >
+        <img
+          src={user?.profile_pic || defaultAvatar}
+          alt="Profile"
+          className="w-8 sm:w-10 md:w-12 h-8 sm:h-10 md:h-12 rounded-full border"
+        />
+        <span className="hidden sm:inline text-gray-700 dark:text-gray-200 font-medium text-sm sm:text-base">
+          {isAuthenticated ? user?.name : 'Guest'}
+        </span>
+      </button>
+
+      {/* Hamburger - Fixed for mobile */}
+      <button
+        onClick={() => {
+          setIsMenuOpen(!isMenuOpen);
+          setShowDropdown(false);
+          setShowProfileDropdown(false);
+          setShowPartnerDropdown(false);
+        }}
+        className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors z-50"
+      >
+        {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+      </button>
+    </div>
+  </div>
+</div>
+
 
       {/* Desktop Categories */}
-      <nav className="hidden md:flex items-center space-x-8 py-2 px-4 border-t border-gray-200 dark:border-gray-700">
-        {categories.map((cat) => (
-          <Link
-            key={cat.name}
-            to={cat.path}
-            className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
-          >
-            {cat.name}
-          </Link>
-        ))}
-      </nav>
+      <nav className="hidden md:flex justify-center items-center space-x-6 py-2 px-4 border-t border-gray-200 dark:border-gray-700">
+  {categories.map((cat) => (
+    <Link
+      key={cat.name}
+      to={cat.path}
+      className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+    >
+      {cat.name}
+    </Link>
+  ))}
+</nav>
+
 
       {/* Mobile Overlay */}
       <div
@@ -399,7 +344,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
             onClick={() => setIsMenuOpen(false)}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
           >
-            <X className="w-8 h-8" />
+            <X className="w-6 h-6" />
           </button>
         </div>
 
@@ -410,9 +355,9 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
             placeholder="Search products..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
           />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
         </form>
 
         {/* Mobile Links */}

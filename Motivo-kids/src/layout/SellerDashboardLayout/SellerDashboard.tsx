@@ -1,64 +1,34 @@
 // src/layout/SellerDashboardLayout/SellerDashboard.tsx
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, Outlet, useLocation } from "react-router-dom";
-import {
-  HiMenu,
-  HiX,
-  HiShoppingCart,
-  HiCube,
-  HiCash,
-  HiOutlineSearch,
-} from "react-icons/hi";
+import { HiMenu, HiX, HiShoppingCart, HiCube, HiCash, HiOutlineSearch } from "react-icons/hi";
 import { Sun, Moon } from "lucide-react";
 import mtvLogo from "../../assets/mtv.png";
 import defaultAvatar from "../../assets/default-avatar.png";
 import { useTheme } from "../../contexts/ThemeContext";
 import { api } from "../../api";
 import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-} from "chart.js";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip } from "chart.js";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip);
-
-interface Product {
-  id: number;
-  name: string;
-}
-
-interface SellerProfile {
-  shop_name: string;
-  profile_image: string | null;
-}
-
-interface Order {
-  id: number;
-  total_price: number;
-  created_at: string;
-}
 
 const SellerDashboard: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<Product[]>([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(null);
+  const [sellerProfile, setSellerProfile] = useState(null);
   const [totalOrders, setTotalOrders] = useState(0);
   const [productsListed, setProductsListed] = useState(0);
   const [earnings, setEarnings] = useState(0);
-  const [ordersData, setOrdersData] = useState<Order[]>([]);
-  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [ordersData, setOrdersData] = useState([]);
+  const [recentOrders, setRecentOrders] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
-  const profileRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef(null);
+  const dropdownRef = useRef(null);
   const { theme, toggleTheme } = useTheme();
 
   const navLinks = [
@@ -76,12 +46,8 @@ const SellerDashboard: React.FC = () => {
   const cardBg = theme === "dark" ? "bg-gray-800" : "bg-white";
   const cardHover = theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100";
   const navText = theme === "dark" ? "text-gray-200" : "text-gray-800";
-  const navHover =
-    theme === "dark" ? "hover:text-blue-400" : "hover:text-blue-600";
-  const inputBg =
-    theme === "dark"
-      ? "bg-gray-700 text-white border-gray-700 placeholder-gray-400"
-      : "bg-white text-black border-gray-300 placeholder-gray-500";
+  const navHover = theme === "dark" ? "hover:text-blue-400" : "hover:text-blue-600";
+  const inputBg = theme === "dark" ? "bg-gray-700 text-white border-gray-700 placeholder-gray-400" : "bg-white text-black border-gray-300 placeholder-gray-500";
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
@@ -91,9 +57,7 @@ const SellerDashboard: React.FC = () => {
       try {
         const res = await api.get("/sellers/profile/");
         const data = res.data;
-        if (data.profile_image) {
-          data.profile_image = `http://127.0.0.1:8000${data.profile_image}`;
-        }
+        if (data.profile_image) data.profile_image = `http://127.0.0.1:8000${data.profile_image}`;
         setSellerProfile(data);
       } catch (err) {
         console.error("Failed to fetch seller profile:", err);
@@ -141,12 +105,8 @@ const SellerDashboard: React.FC = () => {
     }
     const fetchSuggestions = async () => {
       try {
-        const res = await fetch(
-          `http://127.0.0.1:8000/api/products/?search=${encodeURIComponent(
-            searchQuery
-          )}`
-        );
-        const data: Product[] = await res.json();
+        const res = await fetch(`http://127.0.0.1:8000/api/products/?search=${encodeURIComponent(searchQuery)}`);
+        const data = await res.json();
         setSuggestions(data.slice(0, 5));
         setShowDropdown(true);
       } catch {
@@ -158,26 +118,22 @@ const SellerDashboard: React.FC = () => {
 
   // Click outside for dropdowns
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
-        setShowProfileDropdown(false);
-      }
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) setShowProfileDropdown(false);
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) setShowDropdown(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelectSuggestion = (product: Product) => {
+  const handleSelectSuggestion = (product) => {
     setSearchQuery(product.name);
     setShowDropdown(false);
     navigate(`/products/${product.id}`);
     setMenuOpen(false);
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
@@ -193,18 +149,11 @@ const SellerDashboard: React.FC = () => {
       {
         label: "Orders",
         data: [
-          ordersData.filter(
-            (o) =>
-              new Date(o.created_at).toDateString() ===
-              new Date(Date.now() - 86400000).toDateString()
-          ).length,
-          ordersData.filter(
-            (o) => new Date(o.created_at).toDateString() === new Date().toDateString()
-          ).length,
+          ordersData.filter((o) => new Date(o.created_at).toDateString() === new Date(Date.now() - 86400000).toDateString()).length,
+          ordersData.filter((o) => new Date(o.created_at).toDateString() === new Date().toDateString()).length,
         ],
         fill: true,
-        backgroundColor:
-          theme === "dark" ? "rgba(74, 222, 128, 0.4)" : "rgba(22, 163, 74, 0.4)",
+        backgroundColor: theme === "dark" ? "rgba(74, 222, 128, 0.4)" : "rgba(22, 163, 74, 0.4)",
         borderColor: theme === "dark" ? "#4ade80" : "#16a34a",
         tension: 0.3,
         pointRadius: 3,
@@ -283,11 +232,7 @@ const SellerDashboard: React.FC = () => {
               onClick={toggleTheme}
               className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
             >
-              {theme === "light" ? (
-                <Moon className="w-6 h-6 text-gray-700" />
-              ) : (
-                <Sun className="w-6 h-6 text-yellow-400" />
-              )}
+              {theme === "light" ? <Moon className="w-6 h-6 text-gray-700" /> : <Sun className="w-6 h-6 text-yellow-400" />}
             </button>
 
             <div ref={profileRef} className="relative">
@@ -295,11 +240,7 @@ const SellerDashboard: React.FC = () => {
                 onClick={() => setShowProfileDropdown((prev) => !prev)}
                 className={`flex items-center gap-2 p-1 rounded-full transition ${cardHover}`}
               >
-                <img
-                  src={sellerProfile?.profile_image || defaultAvatar}
-                  alt="Profile"
-                  className="w-8 h-8 rounded-full border object-cover"
-                />
+                <img src={sellerProfile?.profile_image || defaultAvatar} alt="Profile" className="w-8 h-8 rounded-full border object-cover" />
               </button>
               {showProfileDropdown && (
                 <div className={`absolute right-0 mt-2 w-40 rounded-md py-2 z-50 shadow-lg ${cardBg}`}>
@@ -347,12 +288,8 @@ const SellerDashboard: React.FC = () => {
 
         {location.pathname === "/seller/dashboard" && (
           <div className="mt-6">
-            <h2 className={`text-3xl font-extrabold mb-6 font-serif ${textMain}`}>
-              Seller Dashboard
-            </h2>
-            <p className={`mb-6 ${textSecondary}`}>
-              Manage your products, view orders, and track earnings.
-            </p>
+            <h2 className={`text-3xl font-extrabold mb-6 font-serif ${textMain}`}>Seller Dashboard</h2>
+            <p className={`mb-6 ${textSecondary}`}>Manage your products, view orders, and track earnings.</p>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

@@ -95,17 +95,12 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Close other dropdowns when one opens
-  const closeOtherDropdowns = () => {
-    setShowProfileDropdown(false);
-    setShowPartnerDropdown(false);
-    setShowDropdown(false);
-    setIsMenuOpen(false);
-  };
-
   const handleSelectSuggestion = (name: string) => {
     setSearchQuery(name);
-    closeOtherDropdowns();
+    setShowDropdown(false);
+    setShowProfileDropdown(false);
+    setShowPartnerDropdown(false);
+    setIsMenuOpen(false);
     navigate(`/search?q=${encodeURIComponent(name)}`);
   };
 
@@ -113,19 +108,28 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      closeOtherDropdowns();
+      setShowDropdown(false);
+      setShowProfileDropdown(false);
+      setShowPartnerDropdown(false);
+      setIsMenuOpen(false);
     }
   };
 
   const handleProtectedClick = (path: string) => {
     if (!isAuthenticated) navigate('/login');
     else navigate(path);
-    closeOtherDropdowns();
+    setShowProfileDropdown(false);
+    setShowPartnerDropdown(false);
+    setShowDropdown(false);
+    setIsMenuOpen(false);
   };
 
   const handleLogout = () => {
     logout();
-    closeOtherDropdowns();
+    setShowProfileDropdown(false);
+    setShowPartnerDropdown(false);
+    setShowDropdown(false);
+    setIsMenuOpen(false);
     navigate('/login');
   };
 
@@ -151,7 +155,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
           <img
             src={mtvLogo || defaultAvatar}
             alt="Motivo Kids"
-            className="w-20 sm:w-24 object-contain"
+            className="w-24 sm:w-28 object-contain"
           />
         </Link>
 
@@ -163,11 +167,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
               placeholder="Search for toys, books, clothes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => {
-                searchQuery && setShowDropdown(true);
-                setShowPartnerDropdown(false);
-                setShowProfileDropdown(false);
-              }}
+              onFocus={() => searchQuery && setShowDropdown(true)}
               className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
             />
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -204,10 +204,14 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
         <div className="flex items-center space-x-2 sm:space-x-4">
           {/* Theme */}
           <button
-            onClick={() => { toggleTheme(); closeOtherDropdowns(); }}
+            onClick={toggleTheme}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
-            {theme === 'light' ? <Moon className="w-6 h-6 text-gray-700" /> : <Sun className="w-6 h-6 text-yellow-400" />}
+            {theme === 'light' ? (
+              <Moon className="w-6 h-6 text-gray-700" />
+            ) : (
+              <Sun className="w-6 h-6 text-yellow-400" />
+            )}
           </button>
 
           {/* Wishlist */}
@@ -351,7 +355,9 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
           <button
             onClick={() => {
               setIsMenuOpen(!isMenuOpen);
-              closeOtherDropdowns();
+              setShowDropdown(false);
+              setShowProfileDropdown(false);
+              setShowPartnerDropdown(false);
             }}
             className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
           >
@@ -361,7 +367,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
       </div>
 
       {/* Desktop Categories */}
-      <nav className="hidden md:flex items-center space-x-8 py-2 pl-16 pr-4 border-t border-gray-200 dark:border-gray-700">
+      <nav className="hidden md:flex items-center space-x-8 py-2 px-4 border-t border-gray-200 dark:border-gray-700">
         {categories.map((cat) => (
           <Link
             key={cat.name}

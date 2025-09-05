@@ -14,8 +14,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ----------------------
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "replace_me_your_secret_key_here")
 DEBUG = False   # ✅ Disable in production
-ALLOWED_HOSTS = ["motiv-x199.onrender.com", "localhost", "127.0.0.1"]
-
+# ALLOWED_HOSTS = ["motiv-x199.onrender.com", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]  # Change in production
 # ----------------------
 # Installed Apps
 # ----------------------

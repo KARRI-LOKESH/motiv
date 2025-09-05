@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import timedelta
 import uuid
 import stripe
+import os
 
 # ----------------------
 # Base Directory
@@ -11,9 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ----------------------
 # Security
 # ----------------------
-SECRET_KEY = "replace_me_your_secret_key_here"
-DEBUG = True
-ALLOWED_HOSTS = ["*"]  # Change in production
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "replace_me_your_secret_key_here")
+DEBUG = False   # ✅ Disable in production
+ALLOWED_HOSTS = ["motiv-x199.onrender.com", "localhost", "127.0.0.1"]
 
 # ----------------------
 # Installed Apps
@@ -39,16 +40,14 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",  # MUST be first
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ whitenoise right after security
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
-
-# AUTH_USER_MODEL = 'sellers.Seller'
 
 # ----------------------
 # URLs & Templates
@@ -77,11 +76,11 @@ if DB_ENGINE == "postgres":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": "motivo",
-            "USER": "motivo",
-            "PASSWORD": "motivo",
-            "HOST": "localhost",
-            "PORT": "5432",
+            "NAME": os.environ.get("DB_NAME", "motivo"),
+            "USER": os.environ.get("DB_USER", "motivo"),
+            "PASSWORD": os.environ.get("DB_PASSWORD", "motivo"),
+            "HOST": os.environ.get("DB_HOST", "localhost"),
+            "PORT": os.environ.get("DB_PORT", "5432"),
         }
     }
 else:
@@ -106,9 +105,10 @@ EMAIL_HOST_PASSWORD = "lydh rmgr gxzf pomi"
 # CORS
 # ----------------------
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
+    "http://localhost:5173",                 # Local frontend
+    "https://motivo-sepia.vercel.app",       # ✅ Vercel frontend
 ]
-CORS_ALLOW_CREDENTIALS = True  # Important for cookies
+CORS_ALLOW_CREDENTIALS = True
 
 # ----------------------
 # DRF + JWT
@@ -124,13 +124,13 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=4),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=90),    # Persistent login
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=90),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer",),
-    "AUTH_COOKIE": "refresh_token",                     # Refresh token cookie
-    "AUTH_COOKIE_SECURE": False,                        # True in production (HTTPS)
-    "AUTH_COOKIE_HTTP_ONLY": True,                      # Prevent JS access
+    "AUTH_COOKIE": "refresh_token",
+    "AUTH_COOKIE_SECURE": True,   # ✅ secure cookies in production
+    "AUTH_COOKIE_HTTP_ONLY": True,
     "AUTH_COOKIE_PATH": "/",
     "AUTH_COOKIE_SAMESITE": "Lax",
 }
@@ -141,10 +141,11 @@ SIMPLE_JWT = {
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ----------------------
 # Localization

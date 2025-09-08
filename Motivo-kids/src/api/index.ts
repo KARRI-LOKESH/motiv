@@ -1,10 +1,7 @@
 // src/api.ts
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
-// ----------------------
-// Base URL
-// ----------------------
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE = 'https://motiv-x199.onrender.com/api'; //http://localhost:8000/api
 
 export const api = axios.create({
   baseURL: API_BASE,
@@ -191,8 +188,8 @@ export const createOrder = async (items: OrderItemPayload[]): Promise<any> =>
 
 export const markOrderPaid = async (orderId: number, method: string, transactionId?: string): Promise<any> =>
   (await api.post(`/orders/${orderId}/mark_paid/`, { method, transaction_id: transactionId || null })).data;
-
 // ================== SELLER AUTH ==================
+// src/api.ts
 export const fetchCategories = async (): Promise<any[]> => {
   const res = await api.get('/categories/');
   return Array.isArray(res.data) ? res.data : [];
